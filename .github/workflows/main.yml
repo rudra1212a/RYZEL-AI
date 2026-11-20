@@ -56,8 +56,12 @@ jobs:
           for perm in ('RECORD_AUDIO', 'INTERNET', 'MODIFY_AUDIO_SETTINGS'):
               if 'android.permission.' + perm not in s:
                   add += '    <uses-permission android:name="android.permission.%s" />\n' % perm
-          if 'android.speech.RecognitionService' not in s:
-              add += '    <queries>\n        <intent><action android:name="android.speech.RecognitionService" /></intent>\n    </queries>\n\n    '
+          intents = ''
+          for act in ('android.speech.RecognitionService', 'android.intent.action.TTS_SERVICE'):
+              if act not in s:
+                  intents += '        <intent><action android:name="%s" /></intent>\n' % act
+          if intents:
+              add += '    <queries>\n' + intents + '    </queries>\n\n    '
           p.write_text(s[:i] + add + s[i:])
           R = 'android/app/src/main/res'
           for root, _, files in os.walk(R):
@@ -90,6 +94,16 @@ jobs:
       - name: Build debug APK
         working-directory: android
         run: ./gradlew assembleDebug --no-daemon
+
+      - name: Show voice setup in the build log
+        shell: bash
+        run: |
+          echo "---- Capacitor plugins ----"
+          cat android/app/src/main/assets/capacitor.plugins.json || true
+          echo "---- merged manifest: queries / audio permissions ----"
+          M=$(find android/app/build -path '*merged_manifests*' -name AndroidManifest.xml | head -1)
+          echo "$M"
+          grep -E "TTS_SERVICE|RecognitionService|RECORD_AUDIO" "$M" || echo "NOT FOUND IN MANIFEST"
 
       - uses: actions/upload-artifact@v4
         with:
