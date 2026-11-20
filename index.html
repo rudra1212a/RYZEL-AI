@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Ryzel</title>
+<meta name="theme-color" content="#0a0e1a">
+<script>(function(){try{var d=document.documentElement,m=navigator.deviceMemory||4,c=navigator.hardwareConcurrency||4,f=localStorage.getItem('ryzel_lite');if(f==='1'||(f!=='0'&&(m<=3||c<=4)))d.classList.add('lite')}catch(e){}})()</script>
+<style>
+:root{--bg:#0a0e1a;--p:#111729;--p2:#182036;--ln:#243049;--t:#e9eef9;--m:#8b97b3;--arc:#7fd6ff;--on:#06131f;--warm:#ffb454;color-scheme:dark}
+@media(prefers-color-scheme:light){:root{--bg:#f4f6fb;--p:#fff;--p2:#eaeff8;--ln:#d9e0ee;--t:#0c1222;--m:#586380;--arc:#0b78b8;--on:#fff;--warm:#c26a00;color-scheme:light}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font:16px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","Noto Sans Bengali","Noto Sans Devanagari",sans-serif;background:var(--bg);color:var(--t);display:flex;overflow:hidden;letter-spacing:-.005em}
+button,select,input,textarea{font:inherit;color:inherit}
+button{background:var(--p2);border:1px solid var(--ln);border-radius:12px;padding:8px 12px;cursor:pointer}
+button:focus-visible,select:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--arc);outline-offset:2px}
+button.pri{background:var(--arc);color:var(--on);border-color:var(--arc);font-weight:600}
+.ib{width:40px;height:40px;padding:0;display:grid;place-items:center;background:none;border:0;border-radius:50%;color:var(--m)}
+.ib:hover,.ib.on{color:var(--t);background:var(--p2)}
+.ib.rec{color:var(--warm);background:var(--p2)}
+svg{display:block}
+.orb{display:inline-block;flex:none;border-radius:50%;width:var(--d,28px);height:var(--d,28px);background:radial-gradient(circle at 34% 30%,#fff 0,var(--arc) 20%,#2563eb 62%,#0a1a44);box-shadow:0 0 calc(var(--d,28px)*.7) -2px color-mix(in srgb,var(--arc) 60%,transparent)}
+.orb.xs{--d:22px;margin-top:2px}.orb.sm{--d:20px}.orb.big{--d:84px}
+#side{width:272px;background:var(--p);border-right:1px solid var(--ln);display:flex;flex-direction:column;padding:12px;padding-top:calc(12px + env(safe-area-inset-top,0px));gap:8px;z-index:20}
+.brand{display:flex;align-items:center;gap:8px;font-weight:650;font-size:18px}
+#side .brand{padding:4px 6px 10px}
+#nc{display:flex;gap:8px;align-items:center;justify-content:center}
+#list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.ci{display:flex;align-items:center;gap:4px;padding:8px 10px;border-radius:10px;cursor:pointer;color:var(--m)}
+.ci.on,.ci:hover{background:var(--p2);color:var(--t)}
+.ci span{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.ci button{border:0;background:none;padding:2px;color:inherit;opacity:.7}
+#side .set{display:flex;gap:8px;align-items:center;justify-content:center;background:none}
+#scrim{display:none}
+#main{flex:1;display:flex;flex-direction:column;min-width:0;height:100%}
+header{display:flex;align-items:center;gap:4px;padding:6px 8px;padding-top:calc(6px + env(safe-area-inset-top,0px));border-bottom:1px solid var(--ln)}
+header .sp{flex:1}
+#menu{display:none}
+#model{max-width:150px;background:var(--p2);border:1px solid var(--ln);border-radius:20px;padding:6px 10px;font-size:13px;color:var(--m);text-overflow:ellipsis}
+#msgs{flex:1;overflow-y:auto;padding:16px 14px}
+.m{max-width:780px;margin:0 auto 18px;word-break:break-word}
+.m.u{display:flex;flex-direction:column;align-items:flex-end;white-space:pre-wrap}
+.ub{background:var(--p2);border:1px solid var(--ln);padding:9px 14px;border-radius:18px 18px 4px 18px;max-width:88%}
+.ub img{max-width:150px;max-height:150px;border-radius:10px;display:block;margin-top:6px}
+.tag{font-size:12px;color:var(--m);margin-top:4px}
+.m.a{display:flex;gap:10px}
+.bd{flex:1;min-width:0;white-space:pre-wrap}
+.bd code{background:var(--p2);padding:1px 6px;border-radius:6px;font-size:.88em}
+.cb{background:var(--p);border:1px solid var(--ln);border-radius:12px;margin:10px 0;overflow:hidden;white-space:normal}
+.ch{display:flex;justify-content:space-between;align-items:center;padding:4px 6px 4px 12px;font-size:12px;color:var(--m);border-bottom:1px solid var(--ln)}
+.ch button{border:0;background:none;padding:3px 8px;font-size:12px;color:var(--m)}
+.cb pre{margin:0;padding:12px;overflow-x:auto;white-space:pre;font-size:13px}.cb code{background:none;padding:0}
+.tools{display:flex;gap:2px;margin-top:6px;white-space:normal;align-items:center}
+.tools button{border:0;background:none;color:var(--m);padding:5px 8px;border-radius:8px;font-size:12px;display:flex;align-items:center}
+.tools button:hover{background:var(--p2);color:var(--t)}.tools svg{width:17px;height:17px}
+.playback{display:flex;align-items:center;gap:7px;flex-wrap:nowrap;margin-top:12px;padding:8px 10px;background:linear-gradient(145deg,var(--p2),color-mix(in srgb,var(--p2) 78%,var(--arc)));border:1px solid color-mix(in srgb,var(--arc) 24%,var(--ln));border-radius:18px;width:max-content;max-width:100%;box-shadow:0 8px 24px #0002,inset 0 1px #ffffff0b}
+.playback button{border:1px solid transparent;background:transparent;color:var(--t);border-radius:12px;min-width:40px;height:40px;padding:0 9px;display:inline-flex;align-items:center;justify-content:center;gap:5px;transition:background .18s,border-color .18s,transform .18s}
+.playback button:active{background:var(--ln);transform:scale(.96)}.playback button svg{width:19px;height:19px}
+.playback .pprimary{background:var(--arc);color:var(--on);box-shadow:0 3px 10px color-mix(in srgb,var(--arc) 25%,transparent)}
+.playback .pstate{font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--m);min-width:58px;text-align:center}
+.playback .pstop{font-size:20px;border-color:var(--ln);min-width:36px}
+.tools button[data-a=regen]{color:var(--arc)}.tools button{min-width:34px;min-height:34px;justify-content:center}
+@media(max-width:420px){.playback{gap:3px;padding:6px}.playback button{min-width:36px;height:38px;padding:0 6px}.playback .pstate{min-width:48px}}
+.empty{max-width:520px;margin:9vh auto 0;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
+.empty h1{font-size:28px;margin:10px 0 0;font-weight:650;letter-spacing:-.02em}
+.empty p{margin:0;color:var(--m);max-width:420px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px}
+.chips button{border-radius:20px;font-size:14px;color:var(--m)}.chips button:hover{color:var(--t);border-color:var(--arc)}
+#comp{padding:8px 10px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));position:relative}
+#atts{display:flex;flex-wrap:wrap;gap:6px;max-width:780px;margin:0 auto 6px}
+.chip{display:flex;align-items:center;gap:6px;background:var(--p2);border:1px solid var(--ln);border-radius:20px;padding:3px 6px 3px 12px;font-size:13px}
+.chip button{border:0;background:none;padding:2px;color:var(--m);display:grid}.chip svg{width:15px;height:15px}
+.bar{display:flex;align-items:flex-end;gap:2px;max-width:780px;margin:0 auto;background:var(--p);border:1px solid var(--ln);border-radius:26px;padding:5px}
+.bar:focus-within{border-color:var(--arc)}
+#in{flex:1;resize:none;max-height:150px;background:none;border:0;outline:0;padding:9px 6px;min-width:0}
+.send{width:40px;height:40px;border-radius:50%;padding:0;display:grid;place-items:center;background:var(--arc);color:var(--on);border:0}
+#pop{position:absolute;left:14px;bottom:calc(72px + env(safe-area-inset-bottom,0px));background:var(--p);border:1px solid var(--ln);border-radius:14px;padding:6px;display:flex;flex-direction:column;box-shadow:0 8px 30px #0006;z-index:5}
+#pop[hidden]{display:none}
+#lp{position:fixed;right:12px;bottom:calc(76px + env(safe-area-inset-bottom,0px));background:var(--p);border:1px solid var(--ln);border-radius:14px;padding:6px;max-height:55vh;overflow-y:auto;z-index:70;box-shadow:0 8px 30px #0006}#lp[hidden]{display:none}#lp button{display:block;width:100%;text-align:left;background:none;border:0;padding:9px 14px}#lp button.on{color:var(--arc);font-weight:600}
+.app{display:flex;justify-content:space-between;gap:10px;align-items:center;background:var(--p2);border:1px solid var(--ln);border-radius:12px;padding:10px 12px;margin-top:10px}.app small{display:block;color:var(--m);font-size:12.5px}.app span{font-size:12px;color:var(--m);white-space:nowrap}
+#pop button{display:flex;gap:10px;align-items:center;background:none;border:0;text-align:left;padding:9px 12px}
+#toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--p2);border:1px solid var(--ln);padding:10px 16px;border-radius:14px;max-width:min(92vw,460px);font-size:14px;z-index:60;box-shadow:0 8px 30px #0006}
+#toast[hidden]{display:none}
+dialog{background:var(--p);color:var(--t);border:1px solid var(--ln);border-radius:20px;width:min(520px,94vw);padding:18px;max-height:90vh}
+dialog::backdrop{background:#0009}
+dialog h3{margin:0 0 4px;font-size:18px}
+dialog label{display:block;margin:14px 0 4px;font-size:13px;color:var(--m)}
+dialog input[type=password],dialog input[type=text],dialog textarea,dialog select{width:100%;background:var(--p2);border:1px solid var(--ln);border-radius:10px;padding:9px 10px}
+dialog input[type=range]{width:100%;accent-color:var(--arc)}
+.r2{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.r2.end{justify-content:flex-end}
+#cv{max-width:100%;max-height:42vh;display:block;margin:0 auto 6px;border-radius:10px}
+#lv{position:fixed;inset:0;background:var(--bg);z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px;text-align:center}
+#lv[hidden]{display:none}
+#orb{--d:150px;cursor:pointer;transition:transform .3s}
+#orb.listening{animation:br 2.6s ease-in-out infinite}
+#orb.thinking{animation:sp 1.2s linear infinite;background:conic-gradient(from 0deg,var(--arc),transparent 70%,var(--arc))}
+#orb.speaking{animation:br .9s ease-in-out infinite;filter:hue-rotate(160deg) saturate(1.2)}
+@keyframes br{50%{transform:scale(1.14)}}@keyframes sp{to{transform:rotate(1turn)}}
+@media(prefers-reduced-motion:reduce){#orb{animation:none!important}}
+#lst{font-size:20px;font-weight:600}#ltx{color:var(--m);min-height:3em;max-width:420px}
+@media(max-width:860px){#menu{display:grid}#side{position:fixed;inset:0 auto 0 0;transform:translateX(-102%);transition:transform .2s;box-shadow:4px 0 24px #0008}#side.open{transform:none}#scrim.open{display:block;position:fixed;inset:0;background:#0008;z-index:15}}
+
+#thinkline{display:inline-flex;align-items:center;gap:7px;color:var(--m);font-size:13px;margin:4px 0 8px}
+#thinkline i{width:5px;height:5px;border-radius:50%;background:var(--arc);display:inline-block;animation:td 1s infinite ease-in-out}
+#thinkline i:nth-child(2){animation-delay:.15s}#thinkline i:nth-child(3){animation-delay:.3s}
+@keyframes td{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-4px)}}
+.chip.loading{border-color:var(--arc);background:linear-gradient(90deg,var(--p2),color-mix(in srgb,var(--arc) 16%,var(--p2)),var(--p2));background-size:200% 100%;animation:uploadshine 1.4s linear infinite}
+@keyframes uploadshine{to{background-position:-200% 0}}
+#thinkline{display:inline-flex;align-items:center;gap:6px;color:var(--m);font-size:13px;padding:5px 0}
+#thinkline i{width:5px;height:5px;border-radius:50%;background:var(--arc);display:inline-block;animation:thinkdot 1.1s infinite ease-in-out}
+#thinkline i:nth-child(2){animation-delay:.16s}#thinkline i:nth-child(3){animation-delay:.32s}
+@keyframes thinkdot{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-5px)}}
+.chip.busy{background:linear-gradient(100deg,var(--p2) 20%,color-mix(in srgb,var(--arc) 20%,var(--p2)) 45%,var(--p2) 70%);background-size:220% 100%;animation:fileshine 1.25s linear infinite}
+@keyframes fileshine{to{background-position:-220% 0}}
+
+/* ===== Ryzel premium motion layer ===== */
+:root{--ease:cubic-bezier(.2,.8,.2,1)}
+body::before{content:"";position:fixed;inset:-25%;z-index:0;pointer-events:none;opacity:.55;filter:blur(46px);background:radial-gradient(38% 32% at 22% 28%,color-mix(in srgb,var(--arc) 34%,transparent),transparent 70%),radial-gradient(34% 30% at 78% 70%,color-mix(in srgb,#8b5cf6 30%,transparent),transparent 70%),radial-gradient(30% 26% at 62% 18%,color-mix(in srgb,#22d3ee 22%,transparent),transparent 70%);animation:aur 24s ease-in-out infinite alternate}
+@keyframes aur{0%{transform:translate3d(-3%,-2%,0) rotate(0)}50%{transform:translate3d(4%,3%,0) rotate(6deg) scale(1.08)}100%{transform:translate3d(-2%,5%,0) rotate(-5deg) scale(1.02)}}
+#main{position:relative;z-index:1}
+header{backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4);background:color-mix(in srgb,var(--bg) 55%,transparent)}
+#side{background:color-mix(in srgb,var(--p) 88%,transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+/* orb: glossy, floating, breathing */
+.orb{position:relative;animation:orbFloat 6s ease-in-out infinite;transition:box-shadow .4s,filter .4s}
+.orb::after{content:"";position:absolute;left:18%;top:12%;width:34%;height:26%;border-radius:50%;background:radial-gradient(closest-side,#fffe,#fff0);transform:rotate(-24deg);pointer-events:none}
+.orb.sm,.orb.xs{animation:none}
+.orb.big{animation:orbFloat 6s ease-in-out infinite,orbGlow 4s ease-in-out infinite}
+@keyframes orbFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes orbGlow{0%,100%{box-shadow:0 0 60px -4px color-mix(in srgb,var(--arc) 55%,transparent),0 0 0 0 color-mix(in srgb,var(--arc) 35%,transparent)}50%{box-shadow:0 0 110px 6px color-mix(in srgb,var(--arc) 70%,transparent),0 0 0 26px transparent}}
+/* welcome entrance */
+.empty>*{opacity:0;animation:rise .8s var(--ease) forwards}
+.empty>*:nth-child(1){animation-delay:.05s}.empty>*:nth-child(2){animation-delay:.18s}.empty>*:nth-child(3){animation-delay:.3s}.empty>*:nth-child(4){animation-delay:.42s}
+@keyframes rise{from{opacity:0;transform:translateY(18px) scale(.97);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
+.empty h1{background:linear-gradient(90deg,var(--t) 20%,var(--arc) 45%,#a78bfa 60%,var(--t) 85%);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:rise .8s var(--ease) .18s forwards,txtShine 7s linear 1s infinite}
+@keyframes txtShine{to{background-position:-220% 0}}
+.chips button{transition:transform .25s var(--ease),border-color .25s,color .25s,box-shadow .25s,background .25s}
+.chips button:hover{transform:translateY(-3px);box-shadow:0 10px 24px -12px var(--arc);background:color-mix(in srgb,var(--arc) 10%,var(--p2))}
+.chips button:active{transform:scale(.95)}
+.chips button{opacity:0;animation:rise .6s var(--ease) forwards}
+.chips button:nth-child(1){animation-delay:.55s}.chips button:nth-child(2){animation-delay:.65s}.chips button:nth-child(3){animation-delay:.75s}.chips button:nth-child(4){animation-delay:.85s}.chips button:nth-child(5){animation-delay:.95s}.chips button:nth-child(n+6){animation-delay:1s}
+/* messages */
+.m.u{animation:msgR .42s var(--ease) both}.m.a{animation:msgL .5s var(--ease) both}
+@keyframes msgR{from{opacity:0;transform:translateX(24px) scale(.94)}to{opacity:1;transform:none}}
+@keyframes msgL{from{opacity:0;transform:translateY(14px);filter:blur(4px)}to{opacity:1;transform:none;filter:none}}
+.ub{box-shadow:0 8px 24px -14px #000a;background:linear-gradient(145deg,var(--p2),color-mix(in srgb,var(--p2) 82%,var(--arc)))}
+.m.a>.orb{animation:orbFloat 5s ease-in-out infinite}
+/* composer */
+.bar{transition:border-color .3s,box-shadow .35s var(--ease),transform .35s var(--ease);backdrop-filter:blur(10px);background:color-mix(in srgb,var(--p) 86%,transparent)}
+.bar:focus-within{box-shadow:0 0 0 3px color-mix(in srgb,var(--arc) 18%,transparent),0 14px 44px -14px var(--arc);transform:translateY(-2px)}
+.send{transition:transform .25s var(--ease),box-shadow .25s,filter .25s;box-shadow:0 6px 18px -6px var(--arc)}
+.send:hover{transform:scale(1.08) rotate(-6deg);filter:brightness(1.1)}.send:active{transform:scale(.9)}
+.ib{transition:background .2s,color .2s,transform .2s var(--ease)}.ib:active{transform:scale(.86)}
+.ib.rec{animation:recPulse 1.3s ease-out infinite}
+@keyframes recPulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--warm) 55%,transparent)}100%{box-shadow:0 0 0 16px transparent}}
+.ci{transition:background .2s,color .2s,transform .25s var(--ease)}.ci:hover{transform:translateX(4px)}
+/* toast + dialogs + popovers */
+#toast:not([hidden]){animation:toastIn .45s var(--ease) both;backdrop-filter:blur(14px)}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,18px) scale(.94)}to{opacity:1;transform:translate(-50%,0)}}
+dialog[open]{animation:dlgIn .4s var(--ease) both}dialog[open]::backdrop{animation:fade .4s both;backdrop-filter:blur(6px)}
+@keyframes dlgIn{from{opacity:0;transform:translateY(22px) scale(.95)}to{opacity:1;transform:none}}@keyframes fade{from{opacity:0}to{opacity:1}}
+#pop:not([hidden]),#lp:not([hidden]){animation:popIn .28s var(--ease) both;transform-origin:bottom left}
+@keyframes popIn{from{opacity:0;transform:translateY(10px) scale(.92)}to{opacity:1;transform:none}}
+/* ripple */
+button{position:relative;overflow:hidden}.rp{position:absolute;border-radius:50%;background:color-mix(in srgb,var(--arc) 45%,transparent);transform:scale(0);animation:rpl .6s ease-out forwards;pointer-events:none}
+@keyframes rpl{to{transform:scale(1);opacity:0}}
+.playback{animation:rise .5s var(--ease) both}
+/* live voice overlay */
+#lv{background:radial-gradient(70% 55% at 50% 42%,color-mix(in srgb,var(--arc) 14%,var(--bg)),var(--bg));animation:fade .4s both}
+#lv:not([hidden]) #orb{animation:orbIn .7s var(--ease) both}
+@keyframes orbIn{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:none}}
+#lv #orb{box-shadow:none;--d:150px}
+#orb.speaking{filter:hue-rotate(255deg) saturate(1.15)}
+#lv::before{content:"";position:absolute;left:50%;top:50%;width:520px;height:520px;margin:-300px 0 0 -260px;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--arc) 34%,transparent),transparent);animation:orbGlow2 3.2s ease-in-out infinite;pointer-events:none}
+@keyframes orbGlow2{0%,100%{opacity:.7;transform:scale(.92)}50%{opacity:1;transform:scale(1.08)}}
+#orb::before{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid var(--arc);opacity:0;pointer-events:none}
+#orb.listening{animation:br 2.6s ease-in-out infinite}
+#orb.listening::before{animation:ring 2.2s ease-out infinite}
+#orb.speaking::before{animation:ring 1.1s ease-out infinite}
+@keyframes ring{0%{transform:scale(1);opacity:.7}100%{transform:scale(2.1);opacity:0}}
+#wv{display:flex;gap:6px;align-items:center;height:44px}
+#wv b{width:6px;height:10px;border-radius:6px;background:linear-gradient(var(--arc),#a78bfa);opacity:.45;transition:opacity .3s}
+#lv[data-s=listening] #wv b,#lv[data-s=speaking] #wv b{opacity:1;animation:wave 1s ease-in-out infinite}
+#lv[data-s=speaking] #wv b{animation-duration:.6s}
+#wv b:nth-child(2){animation-delay:.12s!important}#wv b:nth-child(3){animation-delay:.24s!important}#wv b:nth-child(4){animation-delay:.36s!important}#wv b:nth-child(5){animation-delay:.48s!important}
+@keyframes wave{0%,100%{height:8px}50%{height:40px}}
+#lst{animation:rise .6s var(--ease) both}
+#ltx{transition:opacity .3s}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+/* voice help dialog */
+#vh ol{margin:10px 0;padding-left:20px;color:var(--m);font-size:14px;line-height:1.7}#vh ol b{color:var(--t)}#vh .note{background:var(--p2);border:1px solid var(--ln);border-radius:12px;padding:10px 12px;font-size:13px;color:var(--m);margin-top:10px}
+#vh .ico{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(145deg,var(--arc),#a78bfa);color:var(--on);margin-bottom:10px;box-shadow:0 10px 30px -10px var(--arc);animation:orbFloat 4s ease-in-out infinite;font-size:26px}
+
+/* low-end phone mode (auto): same layout & colors, lighter effects */
+html.lite body::before{display:none}
+html.lite header,html.lite #side,html.lite .bar,html.lite #toast:not([hidden]),html.lite dialog[open]::backdrop{backdrop-filter:none;-webkit-backdrop-filter:none}
+html.lite header{background:var(--bg)}html.lite #side{background:var(--p)}html.lite .bar{background:var(--p)}
+html.lite .m.u,html.lite .m.a,html.lite .empty>*,html.lite .chips button,html.lite .playback,html.lite dialog[open],html.lite #toast:not([hidden]),html.lite #pop:not([hidden]),html.lite #lp:not([hidden]){animation-duration:.01ms!important;animation-delay:0s!important}
+html.lite .empty h1{animation:none;opacity:1}
+html.lite .orb,html.lite .orb.big,html.lite .m.a>.orb,html.lite #vh .ico{animation:none}
+html.lite #lv::before{animation:none}
+html.lite .rp{display:none}
+html.lite *{-webkit-tap-highlight-color:transparent}
+</style></head><body>
+<div id="scrim"></div>
+<aside id="side"><div class="brand"><i class="orb sm"></i>Ryzel</div>
+<button class="pri" id="nc"><span data-ic="plus"></span>New chat</button><div id="list"></div>
+<button class="set" id="gear2"><span data-ic="gear"></span>Settings</button></aside>
+<main id="main">
+<header><button class="ib" id="menu" data-ic="menu" aria-label="Menu"></button><div class="brand"><i class="orb sm"></i>Ryzel</div><div class="sp"></div>
+<select id="model" aria-label="Model" hidden></select><button class="ib" id="rd" data-ic="spkoff" aria-label="Read replies aloud"></button><button class="ib" id="gear" data-ic="gear" aria-label="Settings"></button></header>
+<div id="msgs"></div>
+<div id="comp"><div id="atts"></div>
+<div id="pop" hidden><button data-p="photos"><span data-ic="cam"></span>Gallery (Photos & Videos)</button><button data-p="file"><span data-ic="file"></span>Files and videos</button><button data-p="cam"><span data-ic="cam"></span>Take photo</button><button data-p="drive"><span data-ic="file"></span>Import from Google Drive</button><button data-p="apps"><span data-ic="link"></span>Google connection</button></div>
+<div class="bar"><button class="ib" id="plus" data-ic="plus" aria-label="Attach"></button>
+<textarea id="in" rows="1" placeholder="Message Ryzel"></textarea>
+<button class="ib" id="mic" data-ic="mic" aria-label="Dictate"></button><button class="ib" id="live" data-ic="wave" aria-label="Live voice conversation"></button>
+<button class="send" id="send" data-ic="send" aria-label="Send"></button></div>
+<input type="file" id="pi" accept="image/*,video/*" multiple hidden><input type="file" id="fi" multiple accept="*/*,.pdf,.doc,.docx,.txt,.rtf,.csv,.json,.html,.md,.xlsx,.xls,.ppt,.pptx,.odt,.ods,.mp4,.webm,.mov,.m4v,.avi,.mkv,.3gp" hidden><input type="file" id="ci" accept="image/*" capture="environment" hidden></div>
+</main>
+<div id="toast" hidden></div>
+<div id="lp" hidden></div>
+<div id="lv" hidden><i class="orb" id="orb"></i><div id="wv"><b></b><b></b><b></b><b></b><b></b></div><div id="lst">Listening…</div><div id="ltx"></div>
+<div class="r2"><button id="lint">Tap to interrupt</button><button class="pri" id="lend">End</button></div></div>
+
+
+<dialog id="vh"><div class="ico">🎙️</div><h3>Voice needs a secure (HTTPS) page</h3>
+<p id="vhm" style="margin:4px 0 0;color:var(--m);font-size:14px"></p>
+<ol><li><b>Netlify Drop</b> খুলুন: <b>app.netlify.com/drop</b> (ফ্রি, লগইন ছাড়াই চলে)</li><li>ফাইলটির নাম বদলে <b>index.html</b> করে সেখানে ড্র্যাগ করে ফেলুন</li><li>যে <b>https://…netlify.app</b> লিংক পাবেন সেটা <b>Chrome</b>-এ খুলুন</li><li>Microphone-এ <b>Allow</b> চাপুন। এরপর মাইক ও Live voice দুটোই চলবে</li><li>চাইলে Chrome মেনু → <b>Add to Home screen</b> দিয়ে অ্যাপের মতো রাখুন</li></ol>
+<div class="note">Text chat, ছবি/ফাইল পড়া এবং 🔈 Read aloud এখনই ঠিকমতো চলছে। শুধু <b>ভয়েস ইনপুট</b> (মাইক) HTTPS ছাড়া ব্রাউজার বন্ধ রাখে। এটা Chrome-এর নিরাপত্তা নিয়ম, HTML কোডের ভুল নয়।</div>
+<div class="r2 end"><button id="vhc">Copy steps</button><button class="pri" id="vhx">Got it</button></div></dialog>
+
+<dialog id="set"><h3>Settings</h3>
+<label>API key (OpenRouter, Groq, Gemini, Hugging Face or OpenAI)</label><input type="password" id="key" placeholder="Paste your key"><div class="r2" style="margin-top:6px;align-items:center"><span id="ks" style="color:var(--m);font-size:13px;flex:1"></span><button id="kr">Remove key</button></div>
+<label>Google Client ID (for Gmail, Drive and YouTube)</label><input type="text" id="gid" placeholder="123456-abc.apps.googleusercontent.com" autocomplete="off">
+
+<label>Speaking speed</label><input type="range" id="vr" min="0.7" max="1.4" step="0.1" value="1">
+<label>Model override (optional, leave empty for automatic)</label><input type="text" id="mo" placeholder="Automatic" autocomplete="off">
+<label>Extra instructions for Ryzel (optional)</label><textarea id="sys" rows="3" placeholder="e.g. Keep answers short"></textarea>
+<div class="r2"><button id="exp">Export chat</button><button id="clr">Clear all chats</button></div>
+<div class="r2 end"><button id="sx">Close</button><button class="pri" id="ss">Save</button></div></dialog>
+
+<dialog id="cn"><h3>Connected apps</h3>
+<p style="margin:4px 0 0;color:var(--m);font-size:14px">Connect once, then just ask in chat. Try: “summarize my latest emails”, “find my invoice in Drive”, “search YouTube for lo-fi music”.</p>
+<div class="app"><div><b>Google</b><small>Gmail, Drive and YouTube (read-only)</small></div><span id="cst">Google: not connected</span></div>
+<div class="r2"><button class="pri" id="cgo">Connect Google</button><button id="cdis">Disconnect</button></div>
+<p style="color:var(--m);font-size:13px">WhatsApp and Instagram personal-account linking are not available through their official APIs here. Use the Share action to share replies.</p>
+<div class="r2 end"><button id="cx">Close</button></div></dialog>
+
+<dialog id="ed"><canvas id="cv"></canvas>
+<label>Brightness</label><input type="range" id="b" min="40" max="180" value="100">
+<label>Contrast</label><input type="range" id="c" min="40" max="180" value="100">
+<label>Saturation</label><input type="range" id="s" min="0" max="250" value="100">
+<label>Grayscale</label><input type="range" id="g" min="0" max="100" value="0">
+<label>Blur</label><input type="range" id="bl" min="0" max="10" value="0">
+<div class="r2"><button id="rot">Rotate</button><button id="flp">Flip</button><button id="rst">Reset</button><button id="edl">Download</button></div>
+<div class="r2 end"><button id="eclose">Close</button><button class="pri" id="eok">Use in chat</button></div></dialog>
+
+<dialog id="pv" style="width:96vw;max-width:900px"><iframe id="pvf" sandbox="allow-scripts" style="width:100%;height:65vh;border:1px solid var(--ln);border-radius:10px;background:#fff"></iframe><div class="r2 end"><button id="pvx">Close</button></div></dialog>
+
+<script>
+const $=s=>document.querySelector(s),esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const I={menu:'<path d="M4 7h16M4 12h16M4 17h10"/>',gear:'<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>',
+spk:'<path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/>',spkoff:'<path d="M11 5 6 9H3v6h3l5 4z"/><path d="m16 9 5 6M21 9l-5 6"/>',
+mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',wave:'<path d="M4 10v4M8 6v12M12 3v18M16 7v10M20 10v4"/>',
+send:'<path d="M12 19V5M6 11l6-6 6 6"/>',stop:'<rect x="7" y="7" width="10" height="10" rx="2" fill="currentColor"/>',plus:'<path d="M12 5v14M5 12h14"/>',
+file:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>',cam:'<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
+copy:'<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/>',share:'<circle cx="6" cy="12" r="2.5"/><circle cx="17" cy="6" r="2.5"/><circle cx="17" cy="18" r="2.5"/><path d="m8.2 10.8 6.6-3.6M8.2 13.2l6.6 3.6"/>',
+link:'<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',x:'<path d="M6 6l12 12M18 6 6 18"/>',edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/>',refresh:'<path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.6 9A7 7 0 0 1 18 6l2 6M4 12l2 6a7 7 0 0 0 12.4-3"/>'};
+const ic=n=>`<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${I[n]}</svg>`;
+document.querySelectorAll('[data-ic]').forEach(e=>e.innerHTML=ic(e.dataset.ic));
+
+const QN=/\b(what('?s| is)\s+your\s+name|who\s+are\s+you|your\s+name)\b|তোমার নাম|আপনার নাম|तुम्हारा नाम|आपका नाम|tumhara naam|apka naam|tomar nam/i;
+const QC=/\bwho\b.*\b(creat|made|built|develop|program|train|own)\w*\b.*\byou\b|\byour\s+(creator|developer|maker|owner|founder)\b|তোমাকে (কে|কারা)|আপনাকে (কে|কারা)|তোমার (নির্মাতা|স্রষ্টা)|तुम्हें किसने|आपको किसने|tumhe kisne|tomake ke/i;
+const quick=t=>{const bn=/[\u0980-\u09FF]/.test(t),hi=/[\u0900-\u097F]/.test(t);
+ if(QC.test(t))return bn?'আমাকে রুদ্র অধিকারী তৈরি করেছেন।':hi?'मुझे रुद्र अधिकारी ने बनाया है।':'I was created by Rudra Adhikari.';
+ if(QN.test(t))return bn?'আমি রাইজেল, আপনার ব্যক্তিগত AI সহকারী।':hi?'मैं राइज़ेल हूँ, आपका निजी AI असिस्टेंट।':'I’m Ryzel, your personal AI assistant.';return null};
+const PERSONA='You are Ryzel, a capable, friendly, candid AI assistant. If asked your name, say Ryzel. If asked who created you, say Rudra Adhikari. Be warm and conversational, like a helpful friend, but never flatter automatically or agree just to please. Correct mistakes clearly and explain why; praise only specific, genuinely good reasoning or work. Use practical common sense, ask a concise clarification only when essential, and never pretend to have performed an action you did not perform. LANGUAGE: detect the language of the latest user message and reply in that same language. Support all languages you can competently understand, not only English or Indian languages. If the user writes in Romanized Bengali/Hindi or another language, reply in that language, preferably in its usual native script unless they use Roman script. Do not mix languages unnecessarily. For voice-dictated messages, use the detected transcript language rather than the UI language. CAPABILITIES: answer accurately, explain concepts, write/debug code. When uncertain, say so. When building web apps, provide a complete single-file HTML when requested.';
+const DEF=[{id:'openrouter/free',name:'Auto (free)'}];
+const SUG=[['Write an email','Write a short, polite email asking my manager for a day off.'],['Explain simply','Explain how the internet works in simple words.'],['Translate','Translate Good morning, how are you? into Bengali and Hindi.'],['Plan my day','Help me plan a productive study day with short breaks.']];
+let S={key:LS.get('key',''),model:LS.get('model2','openrouter/free'),sys:LS.get('sys',''),chats:LS.get('chats',[]),cur:LS.get('currentChat',null),models:LS.get('models2',DEF),lang:(((navigator.language||'').toLowerCase().startsWith('bn')?'bn-IN':(navigator.language||'').toLowerCase().startsWith('hi')?'hi-IN':'en-IN')),rate:LS.get('rate',1),read:LS.get('read',0),gid:LS.get('gid',''),mo:LS.get('mo','')};
+S.chats.forEach(c=>{if(c.title==='নতুন চ্যাট')c.title='New chat'});
+let atts=[],ctrl=null,ed={},live=0,rec=null,voiceIn=0;const LITE=document.documentElement.classList.contains('lite');let nsid=0,nHandles=[],emptyTries=0;
+const cur=()=>S.chats.find(c=>c.id==S.cur);
+const strip=c=>Array.isArray(c)?c.map(p=>p.type==='image_url'?{type:'text',text:'[image]'}:p):c;
+const save=()=>{LS.set('chats',S.chats.map(c=>({...c,msgs:c.msgs.map(m=>({...m,content:strip(m.content),imgs:undefined}))})));LS.set('currentChat',S.cur)};
+let tt;function toast(t,ms=4500){const e=$('#toast');e.textContent=t;e.hidden=false;clearTimeout(tt);tt=setTimeout(()=>e.hidden=true,ms)}
+function dl(d,n,t='text/plain'){const b=d instanceof Blob?d:new Blob([d],{type:t+';charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=n;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),5000)}
+const EXT={python:'py',py:'py',javascript:'js',js:'js',html:'html',css:'css',json:'json',csv:'csv',markdown:'md',md:'md',bash:'sh',sh:'sh',xml:'xml',sql:'sql',ts:'ts',typescript:'ts',java:'java',cpp:'cpp',c:'c',yaml:'yml'};
+
+function md(t,plain){
+ const bl=[];
+ t=t.replace(/```(\w*)\n?([\s\S]*?)(```|$)/g,(m,l,c)=>{bl.push({l,c});return '\u0000'+(bl.length-1)+'\u0000'});
+ t=esc(t).replace(/^#{3,} (.*)$/gm,'<b>$1</b>').replace(/^#{1,2} (.*)$/gm,'<b style="font-size:1.1em">$1</b>')
+  .replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/`([^`\n]+)`/g,'<code>$1</code>').replace(/^\s*[-*] /gm,'• ')
+  .replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g,'<a href="$2" target="_blank" rel="noopener" style="color:var(--arc)">$1</a>');
+ return t.replace(/\u0000(\d+)\u0000/g,(m,i)=>{const {l,c}=bl[i],code=`<pre><code>${esc(c.replace(/\n$/,''))}</code></pre>`;
+  return plain?code:`<div class="cb"><div class="ch"><span>${esc(l||'code')}</span><span>${/^html$/i.test(l)?'<button data-a="pv">Preview</button>':''}<button data-a="cp">Copy</button><button data-a="dl" data-l="${l}">Download</button></span></div>${code}</div>`});
+}
+function renderMsgs(){
+ const c=cur(),M=$('#msgs');
+ if(!c.msgs.length){M.innerHTML=`<div class="empty"><i class="orb big"></i><h1>Hi, I’m Ryzel</h1><p>Ask me anything in English, Bengali or Hindi. I can write, explain, translate, read your files and look at your photos.</p><div class="chips">${SUG.map(s=>`<button data-s="${esc(s[1])}">${s[0]}</button>`).join('')}</div></div>`;return}
+ M.innerHTML=c.msgs.map((m,i)=>m.role==='user'
+  ?`<div class="m u"><div class="ub">${esc(m.show||'')}${(m.imgs||[]).map(u=>`<img src="${u}">`).join('')}</div>${(m.names||[]).map(n=>`<div class="tag">${esc(n)}</div>`).join('')}</div>`
+  :`<div class="m a" data-i="${i}"><i class="orb xs"></i><div class="bd">${md(m.content)||'▍'}<div class="tools"><button data-a="ms" title="Listen">${ic('spk')}</button><button data-a="mc" title="Copy">${ic('copy')}</button><button data-a="sh" title="Share to WhatsApp, Gmail and more">${ic('share')}</button><button data-a="regen" title="Regenerate response" aria-label="Regenerate response">${ic('refresh')}</button><button data-a="mw">Word</button><button data-a="mt">.txt</button></div></div></div>`).join('');
+ M.scrollTop=1e9;
+}
+function renderList(){$('#list').innerHTML=S.chats.map(c=>`<div class="ci ${c.id==S.cur?'on':''}" data-id="${c.id}"><span>${esc(c.title)}</span><button data-del="${c.id}" aria-label="Delete chat">${ic('x')}</button></div>`).join('')}
+function renderModels(){const s=$('#model');s.innerHTML=S.models.map(m=>`<option value="${esc(m.id)}">${esc(m.name)}</option>`).join('')+'<option value="__c">Custom model ID…</option>';
+ if(!S.models.some(m=>m.id==S.model))s.insertAdjacentHTML('afterbegin',`<option value="${esc(S.model)}">${esc(S.model)}</option>`);s.value=S.model}
+function newChat(){const c={id:Date.now(),title:'New chat',msgs:[]};S.chats.unshift(c);S.cur=c.id;save();renderList();renderMsgs()}
+const setSend=r=>{$('#send').innerHTML=ic(r?'stop':'send')};
+
+async function send(){
+ if(ctrl){ctrl.abort();return}
+ try{speechSynthesis.cancel()}catch(e){}
+ const text=$('#in').value.trim();const autoLang=detectScript(text)||(/\p{Script=Latin}/u.test(text)?'en-IN':null);if(autoLang){S.lang=autoLang;LS.set('lang',S.lang)}if(!text&&!atts.length){if(live)listen();return}
+ if(text&&!atts.length&&text.length<90){const q=quick(text);if(q){const c=cur();c.msgs.push({role:'user',content:text,show:text,names:[],imgs:[]},{role:'assistant',content:q});if(c.title==='New chat')c.title=text.slice(0,30);$('#in').value='';$('#in').style.height='auto';save();renderMsgs();renderList();if(live){setLive('Speaking…');speak(q,()=>live&&listen())}return}}
+ if(!S.key){toast('Add your API key in Settings first.');if(live)endLive();$('#set').showModal();return}
+ const P=prov();if(!P){toast('This key type is not supported. Use an OpenRouter, Groq, Gemini, Hugging Face or OpenAI key.',7000);if(live)endLive();return}
+ if(text){const ex=await autoTools(text);ex.forEach(([n,tx])=>atts.push({type:'text',name:n,text:tx}))}
+ const c=cur();let body=text;const imgs=[],names=[];
+ for(const a of atts){names.push(a.name);if(a.type==='image')imgs.push(a.url);else body+=`\n\n[File: ${a.name}]\n\`\`\`\n${a.text}\n\`\`\``}
+ const content=imgs.length?[{type:'text',text:body||'Describe this image'},...imgs.map(u=>({type:'image_url',image_url:{url:u}}))]:body;
+ c.msgs.push({role:'user',content,show:text,names,imgs});
+ if(c.title==='New chat')c.title=(text||names[0]).slice(0,30);
+ atts=[];$('#in').value='';$('#in').style.height='auto';renderAtts();
+ const a={role:'assistant',content:''};c.msgs.push(a);renderMsgs();renderList();
+ const vh=voiceIn?'\nThis message was dictated by voice and the speech language was set to '+(LANGS.find(l=>l[0]===S.lang)||LANGS[0])[1]+'.':'';voiceIn=0;const msgs=[{role:'system',content:PERSONA+'\nAUTOMATIC LANGUAGE MODE: Never ask the user to choose a language. Identify the language of each latest message independently and answer in that same language. If the user changes from Bengali to English, Hindi, or another language, switch immediately. For speech transcripts, prioritize the actual transcript language/script, not the previous turn or interface language. If the language is ambiguous, answer in the language most likely used by the user. '+vh+(S.sys?'\n'+S.sys:'')}];c.msgs.slice(0,-1).forEach(m=>msgs.push({role:m.role,content:m.content}));
+ ctrl={aborted:false,rd:null,abort(){this.aborted=true;try{this.rd&&this.rd.cancel()}catch(e){}}};setSend(1);if(live)setLive('Thinking…');
+ const box=$('#msgs').lastElementChild.querySelector('.bd');
+ box.innerHTML='<span id="thinkline">Ryzel is thinking <i></i><i></i><i></i></span>';
+ let failed=0,tick=Date.now();const wd=setInterval(()=>{if(Date.now()-tick>20000)toast('The free model is slow right now. Still waiting…',3000)},5000);
+ try{
+  const r=await fetch(P.base+'/chat/completions',{method:'POST',
+   headers:{'Authorization':'Bearer '+S.key,'Content-Type':'application/json',...(P.id==='openrouter'?{'X-Title':'Ryzel'}:{})},
+   body:JSON.stringify({model:S.mo||await autoModel(P,imgs.length>0),messages:msgs,stream:true})});
+  if(!r.ok)throw new Error(r.status+' '+(await r.text()).slice(0,300));
+  const feed=l=>{if(!l.startsWith('data: '))return;const d=l.slice(6).trim();if(d==='[DONE]')return;try{const j=JSON.parse(d);if(j.error)throw new Error(j.error.message||'error');a.content+=j.choices?.[0]?.delta?.content||''}catch(e){if(!(e instanceof SyntaxError))throw e}};
+  if(!r.body){(await r.text()).split('\n').forEach(feed);box.innerHTML=md(a.content)}
+  else{let lastR=0;const rd=r.body.getReader(),dec=new TextDecoder();ctrl.rd=rd;if(ctrl.aborted)rd.cancel();let buf='';
+   while(true){const {done,value}=await rd.read();tick=Date.now();if(done)break;buf+=dec.decode(value,{stream:true});const ls=buf.split('\n');buf=ls.pop();ls.forEach(feed);{const nw=performance.now();if(nw-lastR>(LITE?160:60)){lastR=nw;box.innerHTML=md(a.content)+'▍';$('#msgs').scrollTop=1e9}}}}
+ }catch(e){if(!ctrl.aborted){failed=1;a.content+=`\n\n⚠️ Error: ${e.message}\nCheck your key and connection, then try again.`}}
+ clearInterval(wd);const ab=ctrl.aborted;ctrl=null;setSend(0);if(!a.content)a.content='(Empty reply. Try another model.)';save();renderMsgs();
+ if(ab)return;
+ if(live){if(failed)endLive();else{setLive('Speaking…');$('#ltx').textContent=a.content.slice(0,140);speak(a.content,()=>live&&listen())}}
+ 
+}
+
+const L=u=>new Promise((ok,no)=>{const s=document.createElement('script');s.src=u;s.onload=ok;s.onerror=()=>no(new Error('Library failed to load (internet required)'));document.head.appendChild(s)});
+const CDN='https://cdnjs.cloudflare.com/ajax/libs/';
+function shrink(f){return new Promise((ok,no)=>{const i=new Image();i.onload=()=>{const k=Math.min(1,1280/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=i.width*k;c.height=i.height*k;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(i,0,0,c.width,c.height);ok(c.toDataURL('image/jpeg',.85))};i.onerror=()=>no(new Error('Could not read image'));i.src=URL.createObjectURL(f)})}
+async function videoFrames(f){
+ const url=URL.createObjectURL(f);
+ try{
+  const v=document.createElement('video');v.preload='metadata';v.muted=true;v.src=url;
+  await new Promise((ok,no)=>{v.onloadedmetadata=ok;v.onerror=()=>no(new Error('This video could not be opened'))});
+  const duration=v.duration||0;if(!duration)throw new Error('Video duration is unavailable');
+  const times=[Math.min(.08,duration/2),Math.min(duration*.25,4),Math.min(duration*.5,8),Math.min(duration*.75,12)].filter((x,i,ar)=>ar.indexOf(x)===i);
+  const frames=[];
+  for(const time of times){
+   v.currentTime=time;await new Promise((ok,no)=>{v.onseeked=ok;v.onerror=no});
+   const scale=Math.min(1,960/Math.max(v.videoWidth,v.videoHeight)),c=document.createElement('canvas');
+   c.width=Math.max(1,Math.round(v.videoWidth*scale));c.height=Math.max(1,Math.round(v.videoHeight*scale));
+   c.getContext('2d').drawImage(v,0,0,c.width,c.height);
+   frames.push(c.toDataURL('image/jpeg',.72));
+  }
+  return {frames,duration};
+ }finally{URL.revokeObjectURL(url)}
+}
+async function addFile(f){
+ try{const n=f.name,ext=n.split('.').pop().toLowerCase();
+  if(f.type.startsWith('video/')||['mp4','webm','mov','m4v'].includes(ext)){
+   toast('Processing video frames…',6000);const v=await videoFrames(f);
+   atts.push({type:'text',name:n,text:'Video file: '+n+' ('+Math.round(v.duration)+' seconds). The following are representative frames sampled from the video. Audio has not been transcribed in this browser-only version.'});
+   v.frames.forEach((url,i)=>atts.push({type:'image',name:n+' — frame '+(i+1),url}));
+  }
+  else if(f.type.startsWith('image/')){atts.push({type:'image',name:n,url:await shrink(f)})}
+  else{let t='';
+   if(ext==='pdf'){if(!window.pdfjsLib){await L(CDN+'pdf.js/3.11.174/pdf.min.js');const w=await(await fetch(CDN+'pdf.js/3.11.174/pdf.worker.min.js')).text();pdfjsLib.GlobalWorkerOptions.workerSrc=URL.createObjectURL(new Blob([w],{type:'text/javascript'}))}
+    const d=await pdfjsLib.getDocument({data:new Uint8Array(await f.arrayBuffer())}).promise;
+    for(let p=1;p<=Math.min(d.numPages,80);p++)t+=(await(await d.getPage(p)).getTextContent()).items.map(i=>i.str).join(' ')+'\n\n'}
+   else if(ext==='docx'){if(!window.mammoth)await L(CDN+'mammoth/1.6.0/mammoth.browser.min.js');t=(await mammoth.extractRawText({arrayBuffer:await f.arrayBuffer()})).value}
+   else if(['xlsx','xls','xlsm','ods'].includes(ext)){if(!window.XLSX)await L(CDN+'xlsx/0.18.5/xlsx.full.min.js');const wb=XLSX.read(await f.arrayBuffer());t=wb.SheetNames.map(s=>'## '+s+'\n'+XLSX.utils.sheet_to_csv(wb.Sheets[s])).join('\n\n')}
+   else t=await f.text();
+   atts.push({type:'text',name:n,text:t.slice(0,60000)})}
+ }catch(e){toast('File problem: '+e.message)}
+ renderAtts();
+}
+function renderAtts(){$('#atts').innerHTML=atts.map((a,i)=>`<span class="chip">${esc(a.name)}${a.type==='image'?`<button data-ed="${i}" aria-label="Edit image">${ic('edit')}</button>`:''}<button data-rm="${i}" aria-label="Remove">${ic('x')}</button></span>`).join('')}
+
+function draw(){const v=id=>$('#'+id).value,w=ed.img.width,h=ed.img.height,r=ed.rot%2,cv=$('#cv');cv.width=r?h:w;cv.height=r?w:h;const x=cv.getContext('2d');
+ x.filter=`brightness(${v('b')}%) contrast(${v('c')}%) saturate(${v('s')}%) grayscale(${v('g')}%) blur(${v('bl')}px)`;
+ x.translate(cv.width/2,cv.height/2);x.rotate(ed.rot*Math.PI/2);x.scale(ed.flip?-1:1,1);x.drawImage(ed.img,-w/2,-h/2)}
+const resetEd=()=>{ed.rot=0;ed.flip=0;['b','c','s'].forEach(k=>$('#'+k).value=100);$('#g').value=0;$('#bl').value=0;draw()};
+function openEd(i){const im=new Image();im.onload=()=>{ed={img:im,i};resetEd();$('#ed').showModal()};im.src=atts[i].url}
+document.querySelectorAll('#ed input').forEach(e=>e.oninput=draw);
+$('#rot').onclick=()=>{ed.rot=(ed.rot+1)%4;draw()};$('#flp').onclick=()=>{ed.flip=!ed.flip;draw()};$('#rst').onclick=resetEd;
+$('#edl').onclick=()=>$('#cv').toBlob(b=>dl(b,'edited.png'));$('#eclose').onclick=()=>$('#ed').close();
+$('#eok').onclick=()=>{atts[ed.i].url=$('#cv').toDataURL('image/jpeg',.9);$('#ed').close();renderAtts()};
+
+/*prov*/
+const PROV=[
+ {id:'openrouter',test:/^sk-or-/,name:'OpenRouter',base:'https://openrouter.ai/api/v1',pick:[/^openrouter\/free$/]},
+ {id:'groq',test:/^gsk_/,name:'Groq',base:'https://api.groq.com/openai/v1',pick:[/llama-3\.3-70b/,/llama.*70b/,/llama/],vis:[/llama-4/,/vision/]},
+ {id:'gemini',test:/^AIza/,name:'Google Gemini',base:'https://generativelanguage.googleapis.com/v1beta/openai',pick:[/^gemini-[\d.]+-flash$/,/flash/,/gemini/]},
+ {id:'hf',test:/^hf_/,name:'Hugging Face',base:'https://router.huggingface.co/v1',pick:[/Llama-3\.3-70B/i,/Qwen.*(72B|32B)/i,/Llama/i],vis:[/VL|Vision/i]},
+ {id:'openai',test:/^sk-(?!ant|or)/,name:'OpenAI',base:'https://api.openai.com/v1',pick:[/^gpt-4o-mini$/,/gpt-.*mini/,/^gpt-4o$/]}];
+const prov=()=>PROV.find(p=>p.test.test(S.key))||null;
+async function autoModel(P,vis){
+ if(P.id==='openrouter')return 'openrouter/free';
+ const ck='am:'+P.id+':'+S.key.slice(-6)+(vis?':v':''),c=LS.get(ck,null);if(c&&Date.now()-c.t<864e5)return c.m;
+ let ids=[];try{const j=await(await fetch(P.base+'/models',{headers:{Authorization:'Bearer '+S.key}})).json();ids=(j.data||j.models||[]).map(m=>(m.id||m.name||'').replace(/^models\//,'')).filter(x=>x&&!/embed|whisper|tts|guard|moderation|image|audio|realtime|transcribe|rerank/i.test(x))}catch(e){}
+ ids.sort((a,b)=>b.localeCompare(a,undefined,{numeric:true}));
+ let m=null;for(const r of (vis&&P.vis?P.vis.concat(P.pick):P.pick)){m=ids.find(x=>r.test(x));if(m)break}
+ m=m||ids[0];if(!m)throw new Error('Could not load models. Check that your key is correct.');
+ LS.set(ck,{m,t:Date.now()});return m}
+/*endprov*/
+const LANGS=[['en-US','English','EN'],['bn-IN','Bengali','BN'],['hi-IN','Hindi','HI'],['ur-PK','Urdu','UR'],['ta-IN','Tamil','TA'],['te-IN','Telugu','TE'],['mr-IN','Marathi','MR'],['gu-IN','Gujarati','GU'],['kn-IN','Kannada','KN'],['ml-IN','Malayalam','ML'],['pa-IN','Punjabi','PA'],['or-IN','Odia','OR'],['as-IN','Assamese','AS'],['ne-NP','Nepali','NE'],['ar-SA','Arabic','AR'],['zh-CN','Chinese (Mandarin)','ZH'],['ja-JP','Japanese','JA'],['ko-KR','Korean','KO'],['fr-FR','French','FR'],['de-DE','German','DE'],['es-ES','Spanish','ES'],['pt-BR','Portuguese','PT'],['ru-RU','Russian','RU'],['it-IT','Italian','IT'],['id-ID','Indonesian','ID'],['tr-TR','Turkish','TR'],['vi-VN','Vietnamese','VI'],['th-TH','Thai','TH'],['fa-IR','Persian','FA'],['sw-KE','Swahili','SW']];
+const langCode=()=>(LANGS.find(l=>l[0]===S.lang)||LANGS[0])[2];
+
+const SC=[[/[\u0980-\u09FF]/,'bn-IN'],[/[\u0900-\u097F]/,'hi-IN'],[/[\u0B80-\u0BFF]/,'ta-IN'],[/[\u0C00-\u0C7F]/,'te-IN'],[/[\u0C80-\u0CFF]/,'kn-IN'],[/[\u0D00-\u0D7F]/,'ml-IN'],[/[\u0A80-\u0AFF]/,'gu-IN'],[/[\u0A00-\u0A7F]/,'pa-IN'],[/[\u0B00-\u0B7F]/,'or-IN'],[/[\u0600-\u06FF]/,'ur-PK'],[/[\u0400-\u04FF]/,'ru-RU'],[/[\u3040-\u30FF]/,'ja-JP'],[/[\u4E00-\u9FFF]/,'zh-CN'],[/[\uAC00-\uD7AF]/,'ko-KR'],[/[\u0E00-\u0E7F]/,'th-TH'],[/[\u0590-\u05FF]/,'he-IL'],[/[\u0370-\u03FF]/,'el-GR'],[/[\u0530-\u058F]/,'hy-AM'],[/[\u10A0-\u10FF]/,'ka-GE']];
+const scriptLang=p=>detectScript(p)||S.lang||'en-US';
+function openLp(e){e.stopPropagation();const lp=$('#lp');lp.innerHTML=LANGS.map(l=>`<button data-l="${l[0]}" class="${l[0]===S.lang?'on':''}">${l[1]}</button>`).join('');lp.hidden=!lp.hidden}
+/* voice */
+if(!window.speechSynthesis){try{window.speechSynthesis={cancel(){},pause(){},resume(){},getVoices(){return[]},speak(u){setTimeout(()=>u.onerror&&u.onerror({}),0)}}}catch(e){}}
+if(!window.SpeechSynthesisUtterance){window.SpeechSynthesisUtterance=function(t){this.text=t}}
+const sp=()=>window.speechSynthesis;
+const clean=t=>t.replace(/```[\s\S]*?(```|$)/g,' code block ').replace(/[*#`_>|]/g,'').replace(/https?:\S+/g,'').replace(/⚠️/g,'');
+const voiceFor=l=>{const v=sp().getVoices().filter(x=>x.lang.replace('_','-').toLowerCase().startsWith(l.slice(0,2)));return v.find(x=>/google/i.test(x.name))||v[0]};
+let warned=0;
+let speechSession=null;
+function speechChunks(t){const out=[];for(const sentence of clean(t).split(/(?<=[।.!?\n])/).map(x=>x.trim()).filter(Boolean)){let rest=sentence;while(rest.length>80){let cut=rest.lastIndexOf(' ',80);if(cut<35)cut=80;out.push(rest.slice(0,cut).trim());rest=rest.slice(cut).trim()}if(rest)out.push(rest)}return out}
+function speechRender(){if(!speechSession)return;const root=speechSession.root;if(!root?.isConnected)return;let panel=root.querySelector('.playback');if(!panel){panel=document.createElement('div');panel.className='playback';root.appendChild(panel)}panel.innerHTML=`<button class="pprimary" data-play="toggle" aria-label="${speechSession.paused?'Resume':'Pause'}" title="${speechSession.paused?'Resume':'Pause'}">${speechSession.paused?'<span style="font-size:17px">▶</span>':'<span style="font-size:17px">Ⅱ</span>'}</button><button data-play="back" aria-label="Back 15 seconds" title="Back 15 seconds"><span style="font-size:18px">↶</span><small>15</small></button><button data-play="forward" aria-label="Forward 15 seconds" title="Forward 15 seconds"><span style="font-size:18px">↷</span><small>15</small></button><span class="pstate">${speechSession.paused?'Paused':'Playing'}</span><button class="pstop" data-play="stop" aria-label="Stop" title="Stop">${ic('x')}</button>`}
+function speechStep(token){const ss=speechSession;if(!ss||ss.token!==token||ss.paused)return;if(ss.index>=ss.parts.length){const done=ss.done;speechSession=null;ss.root?.querySelector('.playback')?.remove();done&&done();return}const part=ss.parts[ss.index++],u=new SpeechSynthesisUtterance(part),l=scriptLang(part);u.lang=l;const v=voiceFor(l);if(v)u.voice=v;u.rate=S.rate;ss.utterance=u;u.onend=()=>{if(speechSession?.token===token)speechStep(token)};u.onerror=()=>{if(speechSession?.token===token){if(!warned){warned=1;toast('No voice for this language. Install it in Android Settings → Text-to-speech.')}speechStep(token)}};sp().speak(u)}
+function speak(t,done,root=null){if(speechSession?.root)speechSession.root.querySelector('.playback')?.remove();sp().cancel();const parts=speechChunks(t);if(!parts.length){done&&done();return}const token=Date.now()+Math.random();speechSession={token,parts,index:0,paused:false,done,root};if(root)speechRender();speechStep(token)}
+function stopSpeech(){const ss=speechSession;try{sp().cancel()}catch(e){}if(ss?.root)ss.root.querySelector('.playback')?.remove();speechSession=null}
+function speechControl(action){const ss=speechSession;if(!ss)return;if(action==='toggle'){if(ss.paused){ss.paused=false;sp().resume()}else{ss.paused=true;sp().pause()}speechRender();return}if(action==='stop'){stopSpeech();return}const delta=action==='back'?-2:2;sp().cancel();ss.index=Math.max(0,Math.min(ss.parts.length,ss.index+delta));ss.paused=false;speechRender();speechStep(ss.token)}
+const setMic=o=>$('#mic').classList.toggle('rec',!!o);
+function setLive(s){$('#lv').dataset.s=s.replace(/[^A-Za-z]/g,'').toLowerCase();$('#lst').textContent=s;$('#orb').className='orb '+s.replace('…','').toLowerCase()}
+
+function voiceHelp(msg){try{$('#vhm').textContent=msg||'';if(!$('#vh').open)$('#vh').showModal()}catch(e){toast(msg,12000)}}
+$('#vhx').onclick=()=>$('#vh').close();
+$('#vhc').onclick=()=>{const t='Ryzel voice setup:\n1) Open app.netlify.com/drop\n2) Rename the file to index.html and drag it there\n3) Open the https://...netlify.app link in Chrome\n4) Allow Microphone';try{navigator.clipboard.writeText(t);toast('Steps copied')}catch(e){toast('Copy not available here')}};
+document.addEventListener('pointerdown',e=>{const b=e.target.closest&&e.target.closest('button');if(!b||b.disabled)return;const r=b.getBoundingClientRect(),d=Math.max(r.width,r.height)*2,sp=document.createElement('span');sp.className='rp';sp.style.cssText='width:'+d+'px;height:'+d+'px;left:'+(e.clientX-r.left-d/2)+'px;top:'+(e.clientY-r.top-d/2)+'px';b.appendChild(sp);setTimeout(()=>sp.remove(),650)},{passive:true});
+const NSR=()=>{try{const C=window.Capacitor;if(C&&C.isNativePlatform&&C.isNativePlatform()){return(C.registerPlugin&&C.registerPlugin('SpeechRecognition'))||(C.Plugins&&C.Plugins.SpeechRecognition)||null}}catch(e){}return null};
+async function nativeStop(){nsid++;const P=NSR();try{for(const h of nHandles)await h.remove()}catch(e){}nHandles=[];if(P){try{await P.stop()}catch(e){}}}
+async function listenNative(P){
+ const id=++nsid;
+ try{for(const h of nHandles)await h.remove()}catch(e){}nHandles=[];
+ try{await P.stop()}catch(e){}
+ try{
+  let pm=await P.checkPermissions();
+  if(pm.speechRecognition!=='granted')pm=await P.requestPermissions();
+  if(id!==nsid)return;
+  if(pm.speechRecognition!=='granted'){toast('মাইক্রোফোন অনুমতি দেওয়া হয়নি। Android Settings → Apps → Ryzel AI → Permissions → Microphone → Allow করুন।',9000);if(live)endLive();setMic(0);return}
+  const av=await P.available();
+  if(id!==nsid)return;
+  if(av&&av.available===false){toast('এই ফোনে Speech Recognition নেই। Google অ্যাপ/Speech Services ইনস্টল ও আপডেট করুন।',9000);if(live)endLive();setMic(0);return}
+ }catch(e){toast('মাইক্রোফোন চালু করা যায়নি: '+(e&&e.message||e),7000);if(live)endLive();setMic(0);return}
+ let fin='',closed=0;
+ const finish=()=>{
+  if(closed||id!==nsid)return;closed=1;setMic(0);
+  const h=nHandles;nHandles=[];h.forEach(x=>{try{x.remove()}catch(e){}});
+  if(!live)return;
+  if(fin.trim()){emptyTries=0;send()}
+  else if(++emptyTries>=4){emptyTries=0;toast('কোনো কথা শোনা যায়নি। আবার চেষ্টা করুন।');endLive()}
+  else if(!ctrl)setTimeout(()=>live&&id===nsid&&listen(),500)
+ };
+ try{
+  nHandles.push(await P.addListener('partialResults',d=>{
+   if(id!==nsid)return;
+   const t=(d&&d.matches&&d.matches[0])||'';if(!t)return;
+   fin=t;$('#in').value=fin;$('#ltx').textContent=fin;voiceIn=1;
+   const detected=detectScript(fin)||(/\p{Script=Latin}/u.test(fin)?'en-IN':null);if(detected&&detected!==S.lang){S.lang=detected;LS.set('lang',S.lang)}
+  }));
+  nHandles.push(await P.addListener('listeningState',d=>{if(d&&d.status==='stopped')setTimeout(finish,250)}));
+  setMic(1);if(live)setLive('Listening…');
+  const res=await P.start({language:S.lang||'en-IN',maxResults:1,partialResults:true,popup:false});
+  if(res&&res.matches&&res.matches[0]&&!fin){fin=res.matches[0];$('#in').value=fin;$('#ltx').textContent=fin;voiceIn=1;finish()}
+ }catch(e){if(id!==nsid)return;setMic(0);toast('Speech চালু করা যায়নি: '+(e&&e.message||e),7000);if(live)endLive()}
+}
+async function listen(){
+ const NP=NSR();if(NP)return listenNative(NP);
+ const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!window.isSecureContext){
+  const proto=location.protocol||'unknown';
+  const where=(proto==='content:'||proto==='file:'||location.origin==='null')
+    ? 'আপনি Android-এর Downloads/Preview থেকে HTML ফাইলটি খুলেছেন। এই Preview-তে Live Microphone স্থায়ীভাবে চালু করা যায় না। ফাইলটি HTTPS ওয়েবসাইটে প্রকাশ করে সেই https:// লিংক Chrome-এ খুলুন।'
+    : 'এই পেজটি নিরাপদ HTTPS ঠিকানা থেকে খুলুন। content://, file:// বা অনিরাপদ পেজে Browser Microphone অনুমতি দেয় না।';
+  voiceHelp(where);
+  if(live)endLive();return;
+ }
+ if(!R){toast('This browser does not provide Speech Recognition. Try the latest Google Chrome.',7000);if(live)endLive();return}
+ try{if(rec)rec.abort()}catch(e){}
+ // SpeechRecognition itself requests microphone access. Avoid a separate getUserMedia
+ // preflight, which caused an extra permission prompt / immediate track shutdown on Android.
+ rec=new R();rec.lang=S.lang||'en-IN';rec.interimResults=true;rec.continuous=!!live;rec.maxAlternatives=1;
+ let fin='',err='';
+ rec.onresult=e=>{
+  fin=[...e.results].map(r=>r[0].transcript).join('');
+  $('#in').value=fin;$('#ltx').textContent=fin;voiceIn=1;
+  const detected=detectScript(fin)||(/\p{Script=Latin}/u.test(fin)?'en-IN':null);if(detected&&detected!==S.lang){S.lang=detected;LS.set('lang',S.lang)}
+ };
+ rec.onerror=e=>{
+  err=e.error;
+  if(/not-allowed|service-not-allowed/.test(err)){
+   const isPreview=/^(content|file):$/.test(location.protocol)||location.origin==='null';
+   isPreview?voiceHelp('Android Preview/Downloads মাইক্রোফোন অনুমতি দেয়নি। এটি HTML কোডের সমস্যা নয়: HTTPS-এ হোস্ট করে Chrome-এ খুলুন, তারপর Microphone Allow করুন।'):toast('মাইক্রোফোন অনুমতি প্রত্যাখ্যান হয়েছে। Chrome → Site settings → Microphone → Allow করুন; Android Settings → Apps → Chrome → Permissions → Microphone-ও Allow করে পেজ Reload করুন।',12000);
+  }
+  else if(err==='network')toast('Speech recognition needs an internet connection.');
+  else if(err==='no-speech')toast('No speech detected. Try again and speak clearly.');
+  if(err!=='no-speech'&&err!=='aborted')endLive();
+ };
+ rec.onend=()=>{setMic(0);if(!live)return;if(fin.trim())send();else if((!err||err==='no-speech')&&!ctrl)setTimeout(()=>live&&listen(),450)};
+ setMic(1);if(live)setLive('Listening…');
+ try{rec.start()}catch(e){toast('Could not start speech recognition: '+e.message);if(live)endLive()}
+}
+function detectScript(text){
+ const found=SC.find(x=>x[0].test(text||''));return found?found[1]:null;
+}
+function startLive(){if(!S.key){toast('Add your OpenRouter API key in Settings first.');return $('#set').showModal()}live=1;$('#lv').hidden=false;$('#ltx').textContent='';listen()}
+function endLive(){live=0;emptyTries=0;try{rec&&rec.abort()}catch(e){}nativeStop();stopSpeech();$('#lv').hidden=true;setMic(0)}
+document.addEventListener('click',()=>{try{sp().speak(new SpeechSynthesisUtterance(''))}catch(e){}},{once:true});
+const paint=()=>{$('#rd').innerHTML=ic(S.read?'spk':'spkoff');$('#rd').classList.toggle('on',!!S.read)};
+
+/* google connectors */
+const GOOGLE_CLIENT_ID='';
+const gid=()=>S.gid||GOOGLE_CLIENT_ID;
+let gTok='';
+const gStat=()=>{$('#cst').textContent=LS.get('gconn',0)?'Google: connected':'Google: not connected'};
+async function gAuth(){if(gTok)return gTok;
+ if(!gid()){toast('Google is not set up yet. Add your Google Client ID in Settings.',7000);$('#set').showModal();throw 0}
+ if(!window.isSecureContext){toast('Google sign-in needs a hosted page (https or localhost).',7000);throw 0}
+ if(!window.google?.accounts)await L('https://accounts.google.com/gsi/client');
+ return new Promise((ok,no)=>{google.accounts.oauth2.initTokenClient({client_id:gid(),scope:'https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/youtube.readonly',
+  callback:r=>{if(r.access_token){gTok=r.access_token;LS.set('gconn',1);gStat();setTimeout(()=>{gTok=''},Math.max(60,(r.expires_in||3600)-60)*1000);ok(gTok)}else no(new Error(r.error||'Google sign-in failed'))},
+  error_callback:e=>no(new Error('Google sign-in cancelled ('+(e.type||'error')+')'))}).requestAccessToken()})}
+async function gGet(u){const t=await gAuth();const r=await fetch(u,{headers:{Authorization:'Bearer '+t}});if(!r.ok)throw new Error('Google API '+r.status+': '+(await r.text()).slice(0,160));return r.json()}
+const gmailText=async q=>{const l=await gGet('https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=10&q='+encodeURIComponent(q||'in:inbox'));
+ const ms=await Promise.all((l.messages||[]).map(m=>gGet('https://gmail.googleapis.com/gmail/v1/users/me/messages/'+m.id+'?format=metadata&metadataHeaders=From&metadataHeaders=Subject&metadataHeaders=Date')));
+ return ms.map(m=>{const h=n=>(m.payload.headers.find(x=>x.name===n)||{}).value||'';return 'From: '+h('From')+'\nSubject: '+h('Subject')+'\nDate: '+h('Date')+'\nPreview: '+m.snippet}).join('\n\n')||'No emails found.'};
+const driveText=async q=>{const f=q?"name contains '"+q.replace(/'/g,"\\'")+"' and trashed=false":'trashed=false';
+ const j=await gGet('https://www.googleapis.com/drive/v3/files?pageSize=15&orderBy='+encodeURIComponent('modifiedTime desc')+'&fields='+encodeURIComponent('files(name,mimeType,modifiedTime,webViewLink)')+'&q='+encodeURIComponent(f));
+ return (j.files||[]).map(x=>x.name+' ('+x.mimeType.split('.').pop()+', '+x.modifiedTime.slice(0,10)+') '+x.webViewLink).join('\n')||'No files found.'};
+async function importDriveFile(){
+ try{
+  if(!LS.get('gconn',0)){gStat();$('#cn').showModal();toast('Connect Google first to import a Drive file.');return}
+  const q=prompt('Search Google Drive files (blank = recent files):','');if(q===null)return;
+  const term=q.trim(),cond=term?"name contains '"+term.replace(/'/g,"\\'")+"' and trashed=false":'trashed=false';
+  const j=await gGet('https://www.googleapis.com/drive/v3/files?pageSize=20&orderBy='+encodeURIComponent('modifiedTime desc')+'&fields='+encodeURIComponent('files(id,name,mimeType,size)')+'&q='+encodeURIComponent(cond));
+  const fs=j.files||[];if(!fs.length){toast('No matching Drive files found.');return}
+  const ans=prompt('Choose file number:\n'+fs.map((f,i)=>(i+1)+'. '+f.name).join('\n'),'1');if(ans===null)return;
+  const f=fs[Number(ans)-1];if(!f){toast('Invalid selection.');return}
+  if(/^application\/vnd.google-apps\./.test(f.mimeType)){toast('Export Google Docs/Sheets/Slides as PDF or Office format first.',7000);return}
+  const token=await gAuth(),r=await fetch('https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(f.id)+'?alt=media',{headers:{Authorization:'Bearer '+token}});
+  if(!r.ok)throw new Error('Google Drive download failed ('+r.status+').');
+  const blob=await r.blob();await addFile(new File([blob],f.name,{type:blob.type||f.mimeType}));toast('Imported '+f.name);
+ }catch(e){if(e)toast('Drive import failed: '+(e.message||e),7000)}
+}
+const ytText=async q=>{const j=await gGet('https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=8&q='+encodeURIComponent(q));
+ return (j.items||[]).map(x=>x.snippet.title+' by '+x.snippet.channelTitle+': https://youtu.be/'+x.id.videoId).join('\n')||'No videos found.'};
+async function autoTools(t){
+ if(!LS.get('gconn',0))return [];
+ const out=[];
+ try{
+  if(/\b(my|latest|recent|new|unread|check|read|summari[sz]e)\b.*\b(e-?mails?|gmail|inbox|mails?)\b/i.test(t))out.push(['Gmail inbox',await gmailText('')]);
+  if(/\bdrive\b/i.test(t)){const m=t.match(/(?:for|named|called)\s+["“]?([\w .-]{2,40})/i);out.push(['Drive files',await driveText(m?m[1].trim():'')])}
+  if(/\byoutube\b/i.test(t)&&/\b(search|find|videos?|channel)\b/i.test(t)){const q=t.replace(/\b(search|find|on|in|for|youtube|videos?|me|please|a|the|show)\b/ig,' ').replace(/\s+/g,' ').trim();if(q)out.push(['YouTube: '+q,await ytText(q)])}
+ }catch(e){if(e)toast(String(e.message||e),6000)}
+ return out}
+$('#cgo').onclick=async()=>{try{await gAuth();toast('Google connected',2500)}catch(e){if(e)toast(String(e.message||e),7000)}};
+$('#cdis').onclick=()=>{try{gTok&&google.accounts.oauth2.revoke(gTok)}catch(e){}gTok='';LS.set('gconn',0);gStat();toast('Google disconnected',2500)};
+$('#cx').onclick=()=>$('#cn').close();
+
+/* events */
+$('#lp').hidden=true;
+$('#msgs').onclick=e=>{const b=e.target.closest('button');if(!b)return;
+ if(b.dataset.play){speechControl(b.dataset.play);return}
+ if(b.dataset.s){$('#in').value=b.dataset.s;$('#in').focus();return}
+ const a=b.dataset.a;if(!a)return;
+ if(a==='regen'){
+  const idx=Number(b.closest('.m').dataset.i),chat=cur(),prev=chat.msgs.slice(0,idx).reverse().find(x=>x.role==='user');
+  if(!prev){toast('No user message found to retry.');return}
+  const retryText=prev.show||(typeof prev.content==='string'?prev.content:'');
+  if(!retryText){toast('This message cannot be regenerated from its saved text.');return}
+  chat.msgs=chat.msgs.slice(0,Math.max(0,idx-1));save();renderMsgs();$('#in').value=retryText;send();return;
+ }
+ if(a==='cp')navigator.clipboard?.writeText(b.closest('.cb').querySelector('code').innerText);
+ else if(a==='dl'){const l=b.dataset.l.toLowerCase();dl(b.closest('.cb').querySelector('code').innerText,'file.'+(EXT[l]||l||'txt'))}
+ else if(a==='pv'){$('#pvf').srcdoc=b.closest('.cb').querySelector('code').innerText;$('#pv').showModal()}
+ else{const t=cur().msgs[b.closest('.m').dataset.i].content;
+  if(a==='ms'){const root=b.closest('.bd');speak(t,null,root)}
+  if(a==='mc'){navigator.clipboard?.writeText(t);toast('Copied')}
+  if(a==='sh'){if(navigator.share)navigator.share({text:t}).catch(()=>{});else window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank')}
+  if(a==='mt')dl(t,'ryzel-reply.txt');
+  if(a==='mw')dl('<html xmlns:w="urn:schemas-microsoft-com:office:word"><meta charset="utf-8"><body style="font-family:Calibri">'+md(t,1).replace(/\n/g,'<br>')+'</body></html>','ryzel-reply.doc','application/msword')}};
+$('#list').onclick=e=>{const d=e.target.closest('[data-del]')?.dataset.del;if(d){S.chats=S.chats.filter(c=>c.id!=d);if(!S.chats.length)newChat();else if(S.cur==d)S.cur=S.chats[0].id;save();renderList();renderMsgs();return}
+ const i=e.target.closest('.ci');if(i){S.cur=+i.dataset.id;renderList();renderMsgs();closeSide()}};
+$('#atts').onclick=e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;if(d.rm!==undefined){atts.splice(+d.rm,1);renderAtts()}if(d.ed!==undefined)openEd(+d.ed)};
+const closeSide=()=>{$('#side').classList.remove('open');$('#scrim').classList.remove('open')};
+$('#menu').onclick=()=>{$('#side').classList.add('open');$('#scrim').classList.add('open')};$('#scrim').onclick=closeSide;
+$('#nc').onclick=()=>{newChat();closeSide()};
+$('#plus').onclick=e=>{e.stopPropagation();$('#pop').hidden=!$('#pop').hidden};
+document.addEventListener('click',e=>{if(!e.target.closest('#pop'))$('#pop').hidden=true});
+$('#pop').onclick=e=>{const p=e.target.closest('button')?.dataset.p;if(p==='file')$('#fi').click();if(p==='photos')$('#pi').click();if(p==='cam')$('#ci').click();if(p==='drive')importDriveFile();if(p==='apps'){gStat();$('#cn').showModal()}$('#pop').hidden=true};
+$('#fi').onchange=async e=>{for(const f of e.target.files)await addFile(f);e.target.value=''};$('#pi').onchange=async e=>{for(const f of e.target.files)await addFile(f);e.target.value=''};
+$('#ci').onchange=async e=>{for(const f of e.target.files)await addFile(f);e.target.value=''};
+document.onpaste=async e=>{for(const f of e.clipboardData.files)await addFile(f)};
+$('#send').onclick=send;
+$('#in').oninput=e=>{e.target.style.height='auto';e.target.style.height=e.target.scrollHeight+'px'};
+$('#in').onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey&&matchMedia('(pointer:fine)').matches){e.preventDefault();send()}};
+$('#mic').onclick=()=>{if($('#mic').classList.contains('rec')){try{rec&&rec.stop()}catch(e){}if(NSR()){const P=NSR();P.stop().catch(()=>{})}}else listen()};
+$('#live').onclick=startLive;$('#lend').onclick=endLive;
+$('#lint').onclick=$('#orb').onclick=()=>{stopSpeech();if(live)listen()};
+$('#rd').onclick=()=>{const last=[...cur().msgs].reverse().find(m=>m.role==='assistant');if(last)speak(last.content,null,$('#msgs .m.a:last-child .bd'));else toast('No reply to read yet.')};
+$('#model').onchange=e=>{let v=e.target.value;if(v==='__c')v=prompt('Model ID (e.g. vendor/model:free)')||S.model;S.model=v;LS.set('model2',v);renderModels()};
+async function loadModels(quiet){try{const j=await(await fetch('https://openrouter.ai/api/v1/models')).json();
+ const f=j.data.filter(m=>+m.pricing?.prompt===0&&+m.pricing?.completion===0).map(m=>{const v=m.architecture?.input_modalities?.includes('image');return{id:m.id,name:(v?'Vision · ':'')+m.name,v:v?0:1}}).sort((a,b)=>a.v-b.v);
+ S.models=[DEF[0],...f];LS.set('models2',S.models);renderModels();if(!quiet)toast(f.length+' free models loaded (Vision = understands images)')}catch(e){if(!quiet)toast('Could not load models: '+e.message)}}
+const keyStat=()=>{const p=prov();$('#ks').textContent=S.key?(p?'Detected: '+p.name+' · saved on this device':'Saved, but the key type is not recognized'):'No API key saved'};
+$('#key').oninput=e=>{const k=e.target.value.trim(),p=PROV.find(x=>x.test.test(k));$('#ks').textContent=k?(p?'Detected: '+p.name:'Key type not recognized'):'No API key saved'};
+const openSet=()=>{keyStat();$('#mo').value=S.mo;$('#gid').value=S.gid;$('#key').value=S.key;$('#sys').value=S.sys;$('#vr').value=S.rate;$('#set').showModal()};
+$('#gear').onclick=$('#gear2').onclick=()=>{closeSide();openSet()};$('#sx').onclick=()=>$('#set').close();
+$('#kr').onclick=()=>{S.key='';LS.set('key','');$('#key').value='';keyStat();toast('API key removed. Paste a new one and press Save.')};
+$('#ss').onclick=()=>{S.key=$('#key').value.trim();S.mo=$('#mo').value.trim();LS.set('mo',S.mo);S.gid=$('#gid').value.trim();LS.set('gid',S.gid);S.sys=$('#sys').value;S.rate=+$('#vr').value;LS.set('key',S.key);LS.set('sys',S.sys);LS.set('rate',S.rate);$('#set').close();toast('Saved',1800)};
+$('#clr').onclick=()=>{if(confirm('Delete all chats?')){S.chats=[];newChat();$('#set').close()}};
+$('#exp').onclick=()=>dl(cur().msgs.map(m=>(m.role==='user'?'Me: ':'Ryzel: ')+(m.show??(typeof m.content==='string'?m.content:''))).join('\n\n'),'chat.txt');
+$('#pvx').onclick=()=>{$('#pv').close();$('#pvf').srcdoc=''};
+if(NSR()){NSR().checkPermissions().then(p=>{if(p.speechRecognition!=='granted')return NSR().requestPermissions()}).catch(()=>{})}
+if('serviceWorker' in navigator&&location.protocol.startsWith('http')){if(NSR()){navigator.serviceWorker.getRegistrations().then(r=>r.forEach(x=>x.unregister())).catch(()=>{});try{caches.keys().then(k=>k.forEach(x=>caches.delete(x)))}catch(e){}}else navigator.serviceWorker.register('sw.js').catch(()=>{})}
+
+if(!S.chats.length)newChat();else if(!S.chats.some(c=>c.id==S.cur))S.cur=S.chats[0].id;
+setSend(0);paint();renderModels();renderList();renderMsgs();
+let okLS=1;try{localStorage.setItem('_t','1');localStorage.removeItem('_t')}catch(e){okLS=0}
+if(!window.isSecureContext||!okLS)setTimeout(()=>toast('লোকাল ফাইল/অ্যাপ প্রিভিউতে কিছু ব্রাউজার ফিচার সীমিত। পূর্ণ মাইক্রোফোন সুবিধার জন্য HTTPS হোস্টেড ঠিকানা ব্যবহার করুন।',10000),600);
+try{navigator.storage?.persist?.()}catch(e){}
+</script></body></html>
