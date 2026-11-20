@@ -22,7 +22,8 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      - uses: android-actions/setup-android@v3
+      - name: Accept Android licenses
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses || true
 
       - name: Prepare project from root files (index.html + logo.png)
         shell: bash
@@ -47,7 +48,6 @@ jobs:
           from pathlib import Path
           from PIL import Image, ImageDraw
           import os
-          # ---- manifest permissions + speech service query
           p = Path('android/app/src/main/AndroidManifest.xml')
           s = p.read_text()
           i = s.find('<application')
@@ -59,7 +59,6 @@ jobs:
           if 'android.speech.RecognitionService' not in s:
               add += '    <queries>\n        <intent><action android:name="android.speech.RecognitionService" /></intent>\n    </queries>\n\n    '
           p.write_text(s[:i] + add + s[i:])
-          # ---- icons from logo.png
           R = 'android/app/src/main/res'
           for root, _, files in os.walk(R):
               for f in files:
