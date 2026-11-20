@@ -1,0 +1,97 @@
+name: Build Ryzel Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: android-actions/setup-android@v3
+
+      - name: Prepare project from root files (index.html + logo.png)
+        shell: bash
+        run: |
+          test -f index.html || { echo "index.html missing in repo root"; exit 1; }
+          test -f logo.png || { echo "logo.png missing in repo root"; exit 1; }
+          mkdir -p www && cp index.html www/index.html
+          cat > package.json <<'EOF'
+          {"name":"ryzel-ai","version":"1.2.0","private":true}
+          EOF
+          cat > capacitor.config.json <<'EOF'
+          {"appId":"com.ryzel.ai","appName":"Ryzel AI","webDir":"www","server":{"androidScheme":"https"},"android":{"backgroundColor":"#0a0e1a"}}
+          EOF
+          npm install --no-audit --no-fund --legacy-peer-deps @capacitor/core@7 @capacitor/android@7 @capacitor/cli@7 @capgo/capacitor-speech-recognition@7
+          npx cap add android
+
+      - name: Permissions, logo, icons, splash
+        shell: bash
+        run: |
+          pip install --quiet pillow
+          python3 - <<'PY'
+          from pathlib import Path
+          from PIL import Image, ImageDraw
+          import os
+          p = Path('android/app/src/main/AndroidManifest.xml')
+          s = p.read_text()
+          i = s.find('<application')
+          assert i > 0, 'Invalid AndroidManifest.xml'
+          add = ''
+          for perm in ('RECORD_AUDIO', 'INTERNET', 'MODIFY_AUDIO_SETTINGS'):
+              if 'android.permission.' + perm not in s:
+                  add += '    <uses-permission android:name="android.permission.%s" />\n' % perm
+          if 'android.speech.RecognitionService' not in s:
+              add += '    <queries>\n        <intent><action android:name="android.speech.RecognitionService" /></intent>\n    </queries>\n\n    '
+          p.write_text(s[:i] + add + s[i:])
+          R = 'android/app/src/main/res'
+          for root, _, files in os.walk(R):
+              for f in files:
+                  if f == 'splash.png' or (f.startswith('ic_launcher') and f.endswith('.png')):
+                      os.remove(os.path.join(root, f))
+          logo = Image.open('logo.png').convert('RGBA')
+          def rr(im, r):
+              m = Image.new('L', im.size, 0)
+              ImageDraw.Draw(m).rounded_rectangle([0, 0, im.size[0]-1, im.size[1]-1], int(im.size[0]*r), fill=255)
+              o = Image.new('RGBA', im.size, (0, 0, 0, 0)); o.paste(im, (0, 0), m); return o
+          def circ(im):
+              m = Image.new('L', im.size, 0); ImageDraw.Draw(m).ellipse([0, 0, im.size[0]-1, im.size[1]-1], fill=255)
+              o = Image.new('RGBA', im.size, (0, 0, 0, 0)); o.paste(im, (0, 0), m); return o
+          for d, (a, f) in {'mdpi': (48, 108), 'hdpi': (72, 162), 'xhdpi': (96, 216), 'xxhdpi': (144, 324), 'xxxhdpi': (192, 432)}.items():
+              D = f'{R}/mipmap-{d}'; os.makedirs(D, exist_ok=True)
+              i1 = logo.resize((a, a), Image.LANCZOS)
+              rr(i1, 0.22).save(f'{D}/ic_launcher.png')
+              circ(i1).save(f'{D}/ic_launcher_round.png')
+              logo.resize((f, f), Image.LANCZOS).save(f'{D}/ic_launcher_foreground.png')
+          os.makedirs(f'{R}/values', exist_ok=True)
+          Path(f'{R}/values/ic_launcher_background.xml').write_text('<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="ic_launcher_background">#0E1426</color>\n</resources>\n')
+          os.makedirs(f'{R}/drawable', exist_ok=True)
+          rr(logo.resize((512, 512), Image.LANCZOS), 0.22).save(f'{R}/drawable/splash_logo.png')
+          Path(f'{R}/drawable/splash.xml').write_text('<?xml version="1.0" encoding="utf-8"?>\n<layer-list xmlns:android="http://schemas.android.com/apk/res/android">\n    <item><shape android:shape="rectangle"><solid android:color="#0A0E1A"/></shape></item>\n    <item android:gravity="center" android:width="160dp" android:height="160dp" android:drawable="@drawable/splash_logo"/>\n</layer-list>\n')
+          print('resources ready')
+          PY
+          npx cap sync android
+
+      - name: Build debug APK
+        working-directory: android
+        run: ./gradlew assembleDebug --no-daemon
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Ryzel-AI-debug-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
